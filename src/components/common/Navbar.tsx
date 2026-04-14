@@ -1,14 +1,16 @@
+import  Link  from "next/link";
+
 export default function Navbar() {
   return (
     <header className="flex items-center justify-between h-[60px] px-6 bg-[#13151a] border-b border-white/[0.06]">
    
       <div className="flex items-center gap-[10px]">
+        <Link href='dashboard'>
         <span className="text-[17px] font-semibold text-white tracking-tight">
           StratoX
         </span>
-        <span className="text-[10px] font-medium text-[#7eb8f7] bg-[#7eb8f7]/[0.12] border border-[#7eb8f7]/20 rounded-[5px] px-[7px] py-[2px] uppercase tracking-[0.5px]">
-          Dashboard
-        </span>
+        </Link>
+        
       </div>
 
      

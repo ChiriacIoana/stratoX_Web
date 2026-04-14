@@ -1,11 +1,3 @@
-/**  ce vreau sa fie aici
-current weather
-charts
-predictions overview
-device status ?
-last data received: time
-**/
-
 "use client";
 import Sidebar from "../../components/common/Sidebar";
 import StatCard from "../../components/common/StatCard";
@@ -76,7 +68,7 @@ export default function Dashboard() {
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
             <TemperatureChart />
             <HumidityChart />
             <AirQualityChart />
