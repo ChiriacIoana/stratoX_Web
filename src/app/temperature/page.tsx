@@ -4,63 +4,41 @@ import { useEffect, useRef } from "react";
 import { Chart, registerables } from "chart.js";
 import Navbar from "@/src/components/common/Navbar";
 import Sidebar from "@/src/components/common/Sidebar";
+import { useWeatherData } from "@/src/hooks/useWeatherData";
 
 Chart.register(...registerables);
-
-// this is a mess change it
-const hours = [
-  "12am",
-  "1",
-  "2",
-  "3",
-  "4",
-  "5",
-  "6",
-  "7",
-  "8",
-  "9",
-  "10",
-  "11",
-  "12pm",
-  "1",
-  "2",
-  "3",
-  "4",
-  "5",
-  "6",
-  "7",
-  "8",
-  "9",
-  "10",
-  "11",
-];
-
-// put real data after you get some more
-const temps = [
-  19, 19, 18, 18, 19, 20, 21, 23, 25, 26, 28, 29, 30, 32, 33, 32, 30, 28, 27,
-  26, 26, 25, 25, 25,
-];
-
-const CURRENT_IDX = 13;
-const HIGH = 33;
-const LOW = 19;
-const AVG = 26;
 
 export default function TemperaturePage() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const chartRef = useRef<Chart | null>(null);
 
+  const data = useWeatherData();
+
   useEffect(() => {
-    if (!canvasRef.current) return;
+    if (!canvasRef.current || data.length == 0) return;
 
     const canvas = canvasRef.current;
-    // no idea what this is
+    // this drwas my chart as flat graphics
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
     if (chartRef.current) {
       chartRef.current.destroy();
     }
+
+    const lastData = data.slice(-24);
+
+    const labels = lastData.map((item) =>
+      new Date(item.time).toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+      }),
+    );
+
+    const temps = lastData.map((item) => item.temperature);
+
+    const CURRENT_IDX = temps.length;
+    const AVG = temps.reduce((sum, val) => sum + val, 0) / temps.length;
 
     const grad = ctx.createLinearGradient(0, 0, 0, canvas.offsetHeight || 400);
     grad.addColorStop(0, "rgba(251,146,60,0.22)");
@@ -79,7 +57,7 @@ export default function TemperaturePage() {
     chartRef.current = new Chart(canvas, {
       type: "line",
       data: {
-        labels: hours,
+        labels,
         datasets: [
           {
             data: temps,
@@ -99,63 +77,32 @@ export default function TemperaturePage() {
             borderColor: "rgba(251,146,60,0.18)",
             borderWidth: 1,
             borderDash: [4, 4],
-            backgroundColor: "transparent",
             fill: false,
-            tension: 0,
             pointRadius: 0,
-            pointHoverRadius: 0,
           },
         ],
       },
       options: {
         responsive: true,
         maintainAspectRatio: false,
-        interaction: { mode: "index", intersect: false },
         plugins: {
           legend: { display: false },
           tooltip: {
-            backgroundColor: "#1a1c24",
-            borderColor: "rgba(251,146,60,0.25)",
-            borderWidth: 1,
-            titleColor: "rgba(255,255,255,0.4)",
-            bodyColor: "#fff",
-            padding: 12,
-            cornerRadius: 10,
-            displayColors: false,
             callbacks: {
-              title: (items) => items[0].label + ":00",
               label: (item) =>
                 item.datasetIndex === 0
-                  ? " " + Math.round(item.parsed.y ?? 0) + "°C"
-                  : "",
-              afterLabel: (item) =>
-                item.datasetIndex === 0 && item.dataIndex === CURRENT_IDX
-                  ? "  ← now"
+                  ? `${Math.round(item.parsed.y ?? 0)}°C`
                   : "",
             },
           },
         },
         scales: {
           x: {
-            grid: { color: "rgba(255,255,255,0.035)" },
-            border: { display: false },
-            ticks: {
-              color: "rgba(255,255,255,0.22)",
-              font: { size: 10, family: "DM Sans, sans-serif" },
-              maxTicksLimit: 12,
-              callback: (_val, i) => (i % 3 === 0 ? hours[i] : ""),
-            },
+            ticks: { color: "rgba(255,255,255,0.4)" },
           },
           y: {
-            position: "right",
-            grid: { color: "rgba(255,255,255,0.035)" },
-            border: { display: false },
-            min: 14,
-            max: 36,
             ticks: {
-              color: "rgba(255,255,255,0.22)",
-              font: { size: 10, family: "DM Sans, sans-serif" },
-              stepSize: 4,
+              color: "rgba(255,255,255,0.4)",
               callback: (v) => v + "°",
             },
           },
@@ -166,32 +113,33 @@ export default function TemperaturePage() {
     return () => {
       chartRef.current?.destroy();
     };
-  }, []);
+  }, [data]);
 
+  const latest = data[data.length - 1];
   return (
-    <div className="flex h-screen">
+    <div className="flex min-h-screen">
       <Sidebar />
 
-      <div className="flex flex-col flex-1 overflow-hidden">
+      <div className="flex flex-col flex-1 h-screen">
         <Navbar />
-        <div className="flex-1 bg-[#111317] p-7 overflow-hidden">
-          <div className="grid grid-cols-[320px_1fr] gap-[18px] h-full">
-            {/* this is fine ig, maybe make smaller */}
-            <div className="bg-[#13151a] border border-white/[0.06] rounded-[20px] p-[32px_28px] flex flex-col justify-between">
+        <div className="flex-1 bg-[#111317] p-4 sm:p-6 lg:p-7 overflow-y-auto">
+          <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-[18px] h-full">
+         
+            <div className="bg-[#13151a] border border-white/[0.06] rounded-[20px] p-[24px] flex flex-col justify-between w-full max-w-none lg:max-w-[400px] mx-0">
               <div>
                 <p className="text-[11px] font-medium text-white/30 uppercase tracking-[1px] mb-[18px]">
                   Current temperature
                 </p>
                 <div className="flex items-start leading-none">
                   <span className="text-[96px] font-bold tracking-[-5px] text-white leading-none">
-                    28
+                    {latest?.temperature?.toFixed(1) ?? "--"}
                   </span>
                   <span className="text-[32px] font-light text-white/40 mt-[14px] ml-[2px]">
                     °C
                   </span>
                 </div>
                 <p className="text-[13px] text-white/35 mt-3 tracking-[0.2px]">
-                  Rainy storm clouds · Florida, US
+                  Rainy storm clouds
                 </p>
               </div>
 
@@ -201,49 +149,53 @@ export default function TemperaturePage() {
                   {[
                     {
                       label: "Highest today",
-                      value: `${HIGH}°C`,
+                      value: data.length
+                        ? Math.max(...data.map((d) => d.temperature)).toFixed(
+                            1,
+                          ) + "°C"
+                        : "--",
                       color: "#f87171",
                     },
                     {
                       label: "Lowest today",
-                      value: `${LOW}°C`,
+                      value: data.length
+                        ? Math.min(...data.map((d) => d.temperature)).toFixed(
+                            1,
+                          ) + "°C"
+                        : "--",
                       color: "#7eb8f7",
                     },
                     {
-                      label: "Day average",
-                      value: `${AVG}°C`,
+                      label: "Average",
+                      value: data.length
+                        ? (
+                            data.reduce((sum, d) => sum + d.temperature, 0) /
+                            data.length
+                          ).toFixed(1) + "°C"
+                        : "--",
                       color: "#fb923c",
                     },
-                  ].map((s, i, arr) => (
-                    <div
-                      key={s.label}
-                      className={`flex items-center justify-between py-[14px] ${
-                        i < arr.length - 1 ? "border-b border-white/[0.05]" : ""
-                      }`}
-                    >
-                      <div className="flex items-center gap-[10px]">
-                        <span
-                          className="w-2 h-2 rounded-full shrink-0"
-                          style={{ background: s.color }}
-                        />
-                        <span className="text-[12px] text-white/[0.38]">
-                          {s.label}
-                        </span>
-                      </div>
-                      <span
-                        className="text-[18px] font-semibold tracking-[-0.5px]"
-                        style={{ color: s.color }}
+                  ].map((item) => (
+                    <div key={item.label} className="py-3">
+                      <p className="text-[11px] text-white/40 uppercase tracking-[0.5px]">
+                        {item.label}
+                      </p>
+                      <p
+                        className="text-[18px] font-semibold text-white mt-1"
+                        style={{ color: item.color }}
                       >
-                        {s.value}
-                      </span>
+                        {item.value}
+                      </p>
                     </div>
                   ))}
                 </div>
               </div>
             </div>
 
-            {/* make smaller and responsive*/}
-            <div className="bg-[#13151a] border border-white/[0.06] rounded-[20px] p-[28px_30px] flex flex-col">
+          
+
+
+            <div className="bg-[#13151a] border border-white/[0.06] rounded-[20px] p-[24px] flex flex-col w-full max-w-[900px] mx-auto lg:mx-0">
               <div className="flex items-center justify-between mb-6">
                 <span className="text-[13px] font-medium text-white/65">
                   Today's temperature curve
