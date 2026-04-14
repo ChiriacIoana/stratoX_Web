@@ -44,12 +44,12 @@ export default function Dashboard() {
         <div className="flex-1 overflow-auto bg-[#111317] p-6">
           <h1 className="text-3xl mb-6">Dashboard</h1>
 
-          <div className="grid grid-cols-4 gap-4 mb-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
             <StatCard
               title="Temperature"
               value={latest?.temperature ?? "--"}
               unit="°C"
-              accentColor="bg-[#fb923c]"
+              accentColor="bg-[#964706]"
               trend={{
                 label: `${temperatureDif}°`,
                 positive: temperatureDif
@@ -61,7 +61,7 @@ export default function Dashboard() {
               title="Humidity"
               value={latest?.humidity ?? "--"}
               unit="%"
-              accentColor="bg-[#2dd4bf]"
+              accentColor="bg-[#005f52]"
               trend={{
                 label: `${humidityDif}%`,
                 positive: humidityDif ? parseFloat(humidityDif) > 0 : false,
@@ -71,7 +71,7 @@ export default function Dashboard() {
               title="Air Quality"
               value={latest?.air_quality ?? "--"}
               unit="val"
-              accentColor="bg-[#7eb8f7]"
+              accentColor="bg-[#036bda]"
               trend={{ label: quality, positive: quality === "Good" }}
             />
           </div>

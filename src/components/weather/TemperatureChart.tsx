@@ -10,7 +10,7 @@ export default function TemperatureChart() {
       title="Temperature"
       data={data}
       dataKey="temperature"
-      color="#fb923c"
+      color="#964706"
       badgeLabel="24 hr"
     />
   );

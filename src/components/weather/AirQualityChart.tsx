@@ -11,7 +11,7 @@ export default function AirQualityChart() {
       title="Air Quality"
       data={data}
       dataKey="air_quality"
-      color="#7eb8f7"
+      color="#036bda"
       badgeLabel="24 hr"
     />
   );

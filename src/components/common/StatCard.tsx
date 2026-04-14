@@ -35,7 +35,7 @@ export default function StatCard({
     
       {trend && (
         <p className="mt-[10px] text-[11px] text-white/30">
-          <span className={trend.positive ? "text-[#4ade80]" : "text-[#f87171]"}>
+          <span className={trend.positive ? "text-[#22c55e]" : "text-[#ef4444] "}>
             {trend.label}
           </span>{" "}
           from latest

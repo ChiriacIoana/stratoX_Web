@@ -12,7 +12,7 @@ export default function HumidityChart() {
       title="Humidity"
       data={data}
       dataKey="humidity"
-      color="#2dd4bf"
+      color="#005f52"
       badgeLabel="24 hr"
     />
   );

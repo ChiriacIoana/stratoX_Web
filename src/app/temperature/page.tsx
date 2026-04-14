@@ -61,7 +61,7 @@ export default function TemperaturePage() {
         datasets: [
           {
             data: temps,
-            borderColor: "#fb923c",
+            borderColor: "#964706",
             borderWidth: 2.5,
             backgroundColor: grad,
             fill: true,
@@ -74,7 +74,7 @@ export default function TemperaturePage() {
           },
           {
             data: temps.map(() => AVG),
-            borderColor: "rgba(251,146,60,0.18)",
+            borderColor: "rgba(150, 71, 6, 0.18)",
             borderWidth: 1,
             borderDash: [4, 4],
             fill: false,
@@ -154,7 +154,7 @@ export default function TemperaturePage() {
                             1,
                           ) + "°C"
                         : "--",
-                      color: "#f87171",
+                      color: "#964706",
                     },
                     {
                       label: "Lowest today",
@@ -163,7 +163,7 @@ export default function TemperaturePage() {
                             1,
                           ) + "°C"
                         : "--",
-                      color: "#7eb8f7",
+                      color: "#005f52",
                     },
                     {
                       label: "Average",
@@ -173,7 +173,7 @@ export default function TemperaturePage() {
                             data.length
                           ).toFixed(1) + "°C"
                         : "--",
-                      color: "#fb923c",
+                      color: "#036bda",
                     },
                   ].map((item) => (
                     <div key={item.label} className="py-3">
