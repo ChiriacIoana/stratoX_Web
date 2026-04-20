@@ -9,21 +9,38 @@ const supabase = createClient(
 export async function POST(req: NextRequest) {
   const data = await req.json();
 
+  const payload = {
+    temperature: data.temperature,
+    humidity: data.humidity,
+    air_quality: data.air_quality,
+    timestamp: data.timestamp || new Date(),
+  };
+
+  // first save in supabase
   const { error } = await supabase
     .from("weather_data")
     .insert([
-      {
-        temperature: data.temperature,
-        humidity: data.humidity,
-        air_quality: data.air_quality,
-        timestamp: data.timestamp || new Date(),
-      },
+      payload,
     ]);
 
   if (error) {
     console.error("Supabase error:", error);
     return NextResponse.json({ success: false, error });
   }
+
+  // then to uvicorn pt robert
+  try { 
+    //this is the endpoint of the py server supposedly
+    await fetch("http://localhost:8000/weather", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    }); 
+  } catch (err) {
+    console.error("Python server error:", err);
+  };
 
   return NextResponse.json({ success: true });
 }
@@ -48,3 +65,4 @@ export async function GET() {
     data,
   });
 }
+

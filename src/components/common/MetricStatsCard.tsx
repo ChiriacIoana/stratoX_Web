@@ -22,12 +22,10 @@ export default function MetricStatsCard({
   const latest = data[data.length - 1];
   const value = latest?.[valueKey];
 
-  // ✅ safer filtering
   const values = data
     .map((d) => d[valueKey])
     .filter((v) => v !== null && v !== undefined);
 
-  // ✅ correct function usage
   const airInfo =
     valueKey === "air_quality" && value != null
       ? getAirQualityInfo(value)
@@ -42,7 +40,6 @@ export default function MetricStatsCard({
   return (
     <div className="bg-[#13151a] border border-white/[0.06] rounded-[20px] p-[24px] flex flex-col justify-between w-full max-w-none lg:max-w-[400px]">
 
-      {/* ✅ Air quality label with color */}
       {airInfo && (
         <p
           className="text-[13px] font-medium mt-2"
