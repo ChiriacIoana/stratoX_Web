@@ -15,6 +15,7 @@ export async function POST(req: NextRequest) {
     air_quality: data.air_quality,
     timestamp: data.timestamp || new Date(),
   };
+  console.log("Payload sent to Supabase + FastAPI:", payload);
 
   // first save in supabase
   const { error } = await supabase
@@ -29,18 +30,42 @@ export async function POST(req: NextRequest) {
   }
 
   // then to uvicorn pt robert
-  try { 
-    //this is the endpoint of the py server supposedly
-    await fetch("http://localhost:8000/weather", {
+   try {
+    const response = await fetch("http://localhost:8000/sensor-data", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify(payload),
-    }); 
+    });
+
+    const text = await response.text();
+    console.log("FastAPI response:", {
+    status: response.status,
+    body: text,
+    });
+
+    if (!response.ok) {
+      console.error("FastAPI error:", response.status, text);
+      return NextResponse.json(
+        {
+          success: false,
+          error: text,
+        },
+        { status: 500 }
+      );
+    }
   } catch (err) {
-    console.error("Python server error:", err);
-  };
+    console.error("Python server unreachable:", err);
+
+    return NextResponse.json(
+      {
+        success: false,
+        error: "Python server unreachable",
+      },
+      { status: 500 }
+    );
+  }
 
   return NextResponse.json({ success: true });
 }
